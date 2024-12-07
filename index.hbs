@@ -1,4 +1,4 @@
-{{!--
+{{!-- 
 This template is used for the index page.
 It can be used also as the home page or the default page.
 --}}
@@ -16,15 +16,12 @@ It can be used also as the home page or the default page.
   <link rel="stylesheet" type="text/css" href="{{asset "css/listing.css"}}" media="screen" />
 {{/contentFor}}
 
-{{!-- The tag below means: insert everything in this file
-into the {body} of the default.hbs template --}}
 {{!< default}}
 
-{{!-- Special header.hbs partial to generate the <header> tag --}}
 {{> header background=@site.cover_image}}
 
 <main class="main-wrap">
-  {{!-- Inject styles of the hero image to make it responsive --}}
+  {{!-- Hero Section --}}
   {{> hero background=@site.cover_image}}
   <div class="m-hero__content" data-animate="fade-down">
     <h1 class="m-hero-title bigger">{{@site.title}}</h1>
@@ -39,7 +36,24 @@ into the {body} of the default.hbs template --}}
       {{/if}}
     {{/if}}
   </div>
+
+  {{!-- Newsletter Call-to-Action --}}
+  <section class="newsletter-section">
+    <div class="newsletter-content" data-animate="fade-up">
+      <h2>{{t "Receba as últimas novidades"}}</h2>
+      <p>{{t "Inscreva-se para receber os melhores artigos e promoções diretamente no seu email!"}}</p>
+      {{#if @site.members_enabled}}
+        <form action="{{@site.url}}/members/api/send-magic-link/" method="POST" class="newsletter-form" onsubmit="return validateEmail()">
+          <input type="email" name="email" placeholder="{{t "Digite seu email"}}" required />
+          <button type="submit" class="m-button filled">{{t "Inscreva-se"}}</button>
+        </form>
+      {{else}}
+        <p>{{t "A funcionalidade de membros não está habilitada no momento."}}</p>
+      {{/if}}
+    </div>
   </section>
+
+  {{!-- Featured Posts Section --}}
   <div class="l-content">
     <div class="l-wrapper" data-animate="fade-up">
       <div class="l-grid centered">
@@ -102,18 +116,29 @@ into the {body} of the default.hbs template --}}
                 <span class="icon-arrow-right" aria-hidden="true"></span>
               </button>
             </div>
+          {{else}}
+            <p>{{t "Nenhum post destacado no momento. Confira nossos últimos artigos abaixo."}}</p>
           {{/if}}
         {{/get}}
         {{!-- The tag below iterates over all the posts --}}
         {{> "loop"}}
       </div>
     </div>
-    {{!-- Links to Previous/Next posts --}}
     {{pagination}}
   </div>
 </main>
 
-{{!-- The #contentFor helper here will send everything inside it up to the matching #block helper found in default.hbs --}}
 {{#contentFor "scripts"}}
   <script defer src="{{asset "js/home.js"}}"></script>
+  <script>
+    function validateEmail() {
+      const email = document.querySelector('input[name="email"]').value;
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!regex.test(email)) {
+        alert('{{t "Por favor, insira um email válido."}}');
+        return false;
+      }
+      return true;
+    }
+  </script>
 {{/contentFor}}
